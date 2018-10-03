@@ -1,0 +1,11 @@
+#Options -Indexes -ExecCGI +FollowSymLinks -MultiViews +Includes
+
+#AddHandler application/x-httpd-php5 .php .htm .html
+AddType application/x-httpd-php .html .htm
+
+DirectoryIndex index.html
+
+AddDefaultCharset UTF-8
+
+RewriteEngine On
+
