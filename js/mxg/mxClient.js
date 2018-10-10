@@ -14140,6 +14140,32 @@ mxToolbar.prototype.addSeparator = function(icon)
 };
 
 /**
+ * Function: addHeader
+ * 
+ * Adds the specifies text as a toolbar sub-header.
+ * 
+ * Parameters:
+ * 
+ * text - header.
+ */
+mxToolbar.prototype.addHeader = function(header_text)
+{	
+    
+    var ht = document.createElement('div');
+    var new_header_text = document.createTextNode(header_text);	
+    ht.appendChild(new_header_text); 
+    
+    //ht.style.marginRight = '6px';
+    //ht.setAttribute('align','center');
+    ht.setAttribute('class','mxToolbarHeader');
+    //ht.setAttribute('style','cursor: move; touch-action: none');
+    
+    //ht.setAttribute('size', '1');
+    
+    this.container.appendChild(ht);
+};
+
+/**
  * Function: addBreak
  * 
  * Adds a break to the container.
@@ -82145,6 +82171,21 @@ mxDefaultToolbar.prototype.addSeparator = function(icon)
 	icon = icon || mxClient.imageBasePath + '/separator.gif';
 	this.toolbar.addSeparator(icon);
 };
+
+/**
+ * Function: addHeader
+ *
+ * Adds table header text to separate logic modules in toolbar
+ * 
+ * Parameters:
+ * 
+ * header_text - text ofthe header to show.
+ * Default is 'section'.
+ */
+mxDefaultToolbar.prototype.addHeader = function(header_text)
+{
+    this.toolbar.addHeader(header_text);
+};
 	
 /**
  * Function: addCombo
@@ -88639,6 +88680,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 * separator - Adds a vertical separator. No attributes.
 	 * hr - Adds a horizontal separator. No attributes.
 	 * br - Adds a linefeed. No attributes. 
+         * header - adds text to separate block in toolbar. Attribute - text of header. 
 	 *
 	 * Attributes:
 	 *
@@ -88652,6 +88694,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 * id - Optional ID to be used for the created DOM element.
 	 * toggle - Optional 0 or 1 to disable toggling of the element. Default is
 	 * 1 (true).
+         * text - text of header separator
 	 *
 	 * The action, mode and template attributes are mutually exclusive. The
 	 * style can only be used with the template attribute. The add node may
@@ -88736,6 +88779,11 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 						{
 							into.addSeparator();
 						}
+						if (node.nodeName == 'header')
+						{
+							var header_text = node.getAttribute('text');
+							into.addHeader(header_text);
+						}                                                
 						else if (node.nodeName == 'br')
 						{
 							into.toolbar.addBreak();

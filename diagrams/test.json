@@ -1,0 +1,144 @@
+{
+	"info": {
+		"Name": "AWS",
+		"Description": "Amazon Web Services"
+	},
+	"functionality": {
+
+	},
+	"components": {
+		"actor": {
+			"info": {
+				"Name": "Consumer",
+				"Type": "actor",
+				"Owner": "OEM"
+			},
+			"interfaces": [{
+				"Name": "User_Internet_Access_US_E_NV"
+			}]
+		},
+
+		"www": {
+			"info": {
+				"Name": "WWW",
+				"Description": "World Wide Web",
+				"Owner": "OEM",
+				"Type": "rectangle"
+			},
+			"interfaces": [],
+			"components": {
+				"aws": {
+					"info": {
+						"Name": "AWS",
+						"Description": "Amazon Web Services",
+						"Owner": "AWS",
+						"Type": "cloud",
+						"Link": "https://aws.amazon.com"
+					},
+					"interfaces": [],
+					"components": {
+						"AWS_Locations": {
+							"info": {
+								"Name": "Locations"
+							},
+							"components": {
+								"US_East_N_Virginia": {
+									"info": {
+										"Name": "US East (N. Virginia)"
+									},
+									"components": {
+										"Services_US_E_NV": {
+											"info": {
+												"Name": "Services"
+											},
+											"components": {
+												"Compute_service": {
+													"info": {
+														"Name": "Compute"
+													},
+													"components": {
+														"EC2_Service": {
+															"info": {
+																"Name": "EC2"
+															},
+															"interfaces": [{
+																"Name": "EC2_Service_Interface_US_E_NV"
+															}]
+														}
+													}
+												},
+												"Storage_service": {
+													"info": {
+														"Name": "Storage"
+													},
+													"components": {
+														"S3_Service": {
+															"info": {
+																"Name": "S3"
+															},
+															"interfaces": [{
+																"Name": "S3_Service_Interface_US_E_NV"
+															}]
+														}
+													}
+												}
+											},
+											"interfaces": [{
+													"Name": "User_Internet_Access_US_E_NV"
+												},
+												{
+													"Name": "EC2_Service_Interface_US_E_NV"
+												},
+												{
+													"Name": "S3_Service_Interface_US_E_NV"
+												}
+											]
+										}
+									},
+									"interfaces": []
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"interfaces": {
+		"info": {
+			"Name": "AWS System Interfaces"
+		},
+		"components": {
+
+
+			"User_Internet_Access": {
+				"info": {
+					"Name": "Internet"
+				}
+			},
+			"User_Internet_Access_US_E_NV": {
+				"aliasOf": "User_Internet_Access"
+			},
+
+
+			"EC2_Service_Interface": {
+				"info": {
+					"Name": "EC2 Srvs I-Face"
+				}
+			},
+			"EC2_Service_Interface_US_E_NV": {
+				"aliasOf": "EC2_Service_Interface"
+			},
+
+
+			"S3_Service_Interface": {
+				"info": {
+					"Name": "S3 Srvs I-Face"
+				}
+			},
+			"S3_Service_Interface_US_E_NV": {
+				"aliasOf": "S3_Service_Interface"
+			}
+		}
+	}
+}
