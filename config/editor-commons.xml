@@ -3,6 +3,13 @@
 		<resource basename="resources/app"/>
 	</ui>
 	<mxDefaultPopupMenu as="popupHandler">
+            <condition name="it_is_storage"><![CDATA[
+                function (editor, cell, evt) { 
+                    var res = cell.value.attributes["template"].textContent;                    
+                    return (res === "aws_storage");
+                }
+            ]]></condition>                        
+
 		<add as="cut" action="cut" icon="images/cut.gif"/>
 		<add as="copy" action="copy" icon="images/copy.gif"/>
 		<add as="paste" action="paste" icon="images/paste.gif"/>
@@ -12,6 +19,21 @@
 		<add as="exitGroup" action="exitGroup" icon="images/up.gif" if="notRoot"/>
 		<add as="enterGroup" action="enterGroup" icon="images/down.gif" if="validRoot"/>
 		<separator/>
+                <add as="AWS Compute" if="it_is_compute">
+                    <add as="EC2" />
+                    <add as="Lightsail" />
+                    <add as="Elastic Container Service" />
+                    <add as="EKS" />
+                    <add as="Lambda" />
+                    <add as="Batch" />
+                    <add as="Elastic Beanstalk" />
+                </add>
+                <add as="AWS Storage" if="it_is_storage">
+                    <add as="S3" />
+                    <add as="EFS" />
+                    <add as="Glacier" />
+                    <add as="Storage Gateway" />
+                </add>                    
 		<add as="shape" if="cell">
 			<add as="group" action="group" icon="images/group.gif" if="ncells"/>
 			<add as="ungroup" action="ungroup" icon="images/ungroup.gif" if="cell"/>
@@ -52,12 +74,13 @@
 		<add as="open"><![CDATA[
 			function (editor)
 			{
-				editor.open(mxUtils.prompt('Enter filename', 'workflow.xml'));
+                            editor.open(mxUtils.prompt('Enter filename', 'workflow.xml'));
 			}
 		]]></add>
 		<add as="openHref"><![CDATA[
 			function (editor, cell)
 			{
+                            debugger;
 				cell = cell || editor.graph.getSelectionCell();
 				
 				if (cell == null)
@@ -265,3 +288,16 @@
 		]]></add>
 	</Array>
 </mxEditor>
+
+<!--
+//<![CDATA[
+//                    function (editor, cell, evt, targetCell) {
+//                        debugger;   
+//                        //move cell to evt coordinates
+//                        //var pt = mxUtils.convertPoint(
+//                        //editor.graph.container, mxEvent.getClientX(evt),
+//                        //mxEvent.getClientY(evt));
+//                        //return editor.addVertex(targetCell, cell, pt.x, pt.y);
+//                    }
+//                ]]>
+-->

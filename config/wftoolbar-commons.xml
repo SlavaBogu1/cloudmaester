@@ -1,12 +1,69 @@
 <mxDefaultToolbar>                
-    <header text="controls"/>
+    <header text="Edit controls"/>
     <add as="save" action="save" icon="images/save.gif"/>
+    <add as="connect" mode="connect" icon="images/connect.gif"><![CDATA[
+            function (editor)
+            {
+                    if (editor.defaultEdge != null)
+                    {
+                            editor.defaultEdge.style = null;
+                    }
+            }
+    ]]></add>
+    <add as="connect" mode="connect" icon="images/straight.gif"><![CDATA[
+            function (editor)
+            {
+                    if (editor.defaultEdge != null)
+                    {
+                            editor.defaultEdge.style = 'straightEdge';
+                    }
+            }
+    ]]></add>    
+    <br/>                    
+    <add as="select" mode="select" icon="images/select.gif"/>
+    <add as="pan" mode="pan" icon="images/pan.gif"/>
+    <add as="undo" action="undo" icon="images/undo.gif"/>
+    <add as="redo" action="redo" icon="images/redo.gif"/>
     <br/>            
     <hr/>
+    <header text="AWS locations"/>
+    <add as="North America" template="swl_na" icon="images/location/na.png"/>
+    <add as="Asia Pacific" template="swl_apac" icon="images/location/apac.png"/>
+    <add as="Europe" template="swl_europe" icon="images/location/europe.png"/>
+    <add as="South America" template="swl_sa" icon="images/location/sa.png"/>
+    <br/>            
+    <hr/>
+    <header text="Other locations"/>
+    <add as="Custom Location" template="swl_op" icon="images/location/op.png"/>
+    <br/>            
+    <hr/>
+
     <header text="AWS services"/>
+    <add as="Compute" template="aws_compute" icon="images/aws/compute.svg">        
+    </add>
+    <add as="Storage" template="aws_storage" style="ellipse" icon="images/aws/storage.svg"/>
+    <add as="Database" template="aws_database" icon="images/aws/database.svg"/>
+    <add as="Migration" template="aws_migration" icon="images/aws/migration.svg"/>
+    <add as="Networking Content Delivery" template="aws_networking" icon="images/aws/networking.svg"/>
+    <add as="Developer Tools" template="aws_developer" icon="images/aws/developer.svg"/>
+    <add as="Management Tools" template="aws_management" icon="images/aws/management.svg"/>
+    <add as="Media Services" template="aws_media" icon="images/aws/media.svg"/>
+    <add as="Machine Learning" template="aws_ai" icon="images/aws/ai.svg"/>    
+    <add as="Analytics" template="aws_analytics" icon="images/aws/analytics.svg"/>
+    <add as="Security Identity Compliance" template="aws_security" icon="images/aws/security.svg"/>
+    <add as="AWS Cost Management" template="aws_costmanagement" icon="images/aws/costmanagement.svg"/>
+    <add as="AR VR" template="aws_reality" icon="images/aws/reality.svg"/>    
+    <add as="Application Integration" template="aws_applications" icon="images/aws/applications.svg"/>    
+    <add as="Customer Engagement" template="aws_messaging" icon="images/aws/messaging.svg"/>    
+    <add as="Business Productivity" template="aws_enterprise" icon="images/aws/enterprise.svg"/>    
+    <add as="Desktop App Streaming" template="aws_desktop" icon="images/aws/desktop.svg"/>    
+    <add as="Internet of Things" template="aws_iot" icon="images/aws/iot.svg"/>    
+    <add as="Game Development" template="aws_game" icon="images/aws/game.svg"/>    
     <br/>            
     <hr/>
-    <header text="AWS software"/>
+    <header text="AWS AMI"/>
+    <add as="AMI Linux" template="ami_linux" style="symbol;image=images/ami/linux/linux.png" icon="images/ami/linux/linux.png"/>
+    <add as="AMI Windows Server 2016" template="ami_win" style="symbol;image=images/ami/windows/windows-server_2016.png" icon="images/ami/windows/windows-server_2016.png"/>
 <!--    
     <add as="select" mode="select" icon="images/select.gif"><![CDATA[
             function (editor)
@@ -15,12 +72,8 @@
                 
             }
     ]]></add>        
--->    
-    <add as="pan" mode="pan" icon="images/pan.gif"/>
+-->        
     <br/><hr/>
-    <add as="undo" action="undo" icon="images/undo.gif"/>
-    <add as="redo" action="redo" icon="images/redo.gif"/>
-    <br/>
 	<!--
         <add as="show" action="show" icon="images/preview.gif"/>
 	<add as="print" action="print" icon="images/print.gif"/>

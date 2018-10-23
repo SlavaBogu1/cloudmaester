@@ -4,10 +4,14 @@
 	forcedInserting="0"
 	swimlaneRequired="0">
 	<include name="config/editor-commons.xml"/>
-	<add as="onInit">
-		function ()
-		{
-			this.showTasks();
+        <!-- 
+        Add onInit function
+        this - mxEditor
+        -->
+        <add as="onInit">
+		function () {
+		    //debugger;
+                    this.showTasks();
 		}
 	</add>
 	<Array as="cycleAttributeValues">
@@ -18,6 +22,18 @@
 		<add value="#4679B6"/>
 	</Array>
 	<Array as="templates">
+            <condition name="it_is_compute"><![CDATA[
+                function (editor, cell, evt) {                  
+                    debugger;
+                    var res = cell.value.attributes["template"].textContent;                                        
+                    // this is wrong place - need to find "creation" of object.
+                    //var label = cell.value.attributes["label"].textContent;
+                    //label = label + "</br>" + cell.value.attributes["default"].textContent;
+                    //cell.value.attributes["label"].value = label;
+                    //be aware of multi-call 
+                    return (res === "aws_compute");
+                }
+            ]]></condition>            
 		<add as="group">
 			<Group label="" description="" href="">
 				<mxCell vertex="1" style="group" connectable="0"/>
@@ -30,20 +46,193 @@
 				</mxCell>
 			</Edge>
 		</add>
-		<add as="swimlane">
+<!--
+                <add as="swimlane">
 			<Swimlane label="AWS Location" description="" href="">
 				<mxCell vertex="1" style="swimlane" connectable="0">
-					<mxGeometry as="geometry" width="800" height="200"/>
+					<mxGeometry as="geometry" width="800" height="350"/>
 				</mxCell>
 			</Swimlane>
 		</add>
-		<add as="task">
-			<Task label="AWS Compute" description="" href="">
+-->                
+		<add as="swl_na">
+			<Swimlane label="AWS North America" description="" href="">
+				<mxCell vertex="1" style="swimlane" connectable="0">
+					<mxGeometry as="geometry" width="800" height="350"/>
+				</mxCell>
+			</Swimlane>
+		</add>
+		<add as="swl_apac">
+			<Swimlane label="AWS Asia and Pacific" description="" href="">
+				<mxCell vertex="1" style="swimlane" connectable="0">
+					<mxGeometry as="geometry" width="800" height="350"/>
+				</mxCell>
+			</Swimlane>
+		</add>
+		<add as="swl_europe">
+			<Swimlane label="AWS Europe" description="" href="">
+				<mxCell vertex="1" style="swimlane" connectable="0">
+					<mxGeometry as="geometry" width="800" height="350"/>
+				</mxCell>
+			</Swimlane>
+		</add>
+		<add as="swl_sa">
+			<Swimlane label="AWS South America" description="" href="">
+				<mxCell vertex="1" style="swimlane" connectable="0">
+					<mxGeometry as="geometry" width="800" height="350"/>
+				</mxCell>
+			</Swimlane>
+		</add>
+		<add as="swl_op">
+			<Swimlane label="On-premises" description="" href="">
+				<mxCell vertex="1" style="swimlane" connectable="0">
+					<mxGeometry as="geometry" width="800" height="350"/>
+				</mxCell>
+			</Swimlane>
+		</add>
+                <add as="aws_compute">
+			<Task template="aws_compute" default="EC2" label="AWS Compute" description="Amazon Cloud Compute services" href="https://aws.amazon.com/products/?nc2=h_m1">
+                            <mxCell vertex="1">	
+                                    <mxGeometry as="geometry" width="72" height="72"/>                                        
+                            </mxCell>
+			</Task>
+		</add>
+                <add as="aws_storage">
+			<Task template="aws_storage" default="S3" label="AWS Storage" description="" href="">
 				<mxCell vertex="1">	
 					<mxGeometry as="geometry" width="72" height="72"/>
 				</mxCell>
 			</Task>
 		</add>
+                <add as="aws_database">
+			<Task label="AWS Database" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_migration">
+			<Task label="AWS Migration" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_networking">
+			<Task label="AWS Networking Content Delivery" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_developer">
+			<Task label="AWS Networking Content Delivery" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_management">
+			<Task label="AWS Management Tools" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_media">
+			<Task label="AWS Media Services" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_ai">
+			<Task label="AWS Machine Learning" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_analytics">
+			<Task label="AWS Analytics" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_security">
+			<Task label="AWS Security Identity Compliance" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_costmanagement">
+			<Task label="AWS Cost Management" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_reality">
+			<Task label="AWS AR VR" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_applications">
+			<Task label="Application Integration" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_messaging">
+			<Task label="AWS Customer Engagement" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_enterprise">
+			<Task label="AWS Business Productivity" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_desktop">
+			<Task label="AWS Desktop App Streaming" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_iot">
+			<Task label="AWS Internet of Things" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                <add as="aws_game">
+			<Task label="Game Development" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+                
+<!--
+                <add as="task">
+			<Task label="Task" description="" href="">
+				<mxCell vertex="1">	
+					<mxGeometry as="geometry" width="72" height="72"/>
+				</mxCell>
+			</Task>
+		</add>
+-->                
 		<add as="subprocess">
 			<Subprocess label="Subprocess" description="" href="">
 				<mxCell vertex="1" style="rounded">		
@@ -51,13 +240,30 @@
 				</mxCell>
 			</Subprocess>
 		</add>
+<!--                
 		<add as="shape">
-			<Shape label="AWS storage" description="" href="">
+			<Shape label="shape" description="" href="">
 				<mxCell vertex="1" style="ellipse">		
 					<mxGeometry as="geometry" width="72" height="72"/>
 				</mxCell>
 			</Shape>
 		</add>
+-->                
+		<add as="ami_win">
+			<Symbol label="AMI Windows 2016" description="Microsoft Windows Server 2016 with SQL Server 2017 Web" href="https://aws.amazon.com/marketplace/pp/B0765D7PGL">
+				<mxCell vertex="1" style="symbol;image=images/ami/windows/windows-server.png">		
+					<mxGeometry as="geometry" width="32" height="32"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="ami_linux">
+			<Symbol label="AMI Linux" description="Linux" href="https://aws.amazon.com/amazon-linux-ami/2012.03-packages/">
+				<mxCell vertex="1" style="symbol;image=images/ami/linux/linux.png">		
+					<mxGeometry as="geometry" width="32" height="32"/>
+				</mxCell>
+			</Symbol>
+		</add>
+                
 		<add as="symbol">
 			<Symbol label="Symbol" description="" href="">
 				<mxCell vertex="1" style="symbol;image=images/symbols/event.png">		
@@ -65,12 +271,10 @@
 				</mxCell>
 			</Symbol>
 		</add>
-	</Array>
+	</Array>      
 	<add as="createTasks"><![CDATA[
-		function (div)
-		{
+		function (div) {
 			var off = 30;
-			
 			if (this.graph != null)
 			{
 				var layer = this.graph.model.root.getChildAt(0);

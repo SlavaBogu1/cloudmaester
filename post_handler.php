@@ -1,13 +1,19 @@
 <?php
 
-/* 
+/*! \mainpage Cloud Maester
+ *
+ * \section php_interface Using PHP
+ *
  * Receive XML file from client to convert into JSON
  * Save both XML and JSON version because XML is to read back, so no needs to use 
  * XML->JSON->XML converters. Simply have both types.
- * TODO:
- * error checking
- * multi-user support
- */    
+ *
+ * \section todo TODO
+ *
+ * \subsection error Need to add error checking
+ * \subsection multi_user Need to add support of mutliple users
+ * etc...
+ */
     $xml = $_POST["xml"];
     
     $json_filename = "diagrams/cloudmaester.json";
