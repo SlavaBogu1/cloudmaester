@@ -15393,11 +15393,11 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			// Workaround for "unspecified error" in IE8 standards
 			try
 			{
-    currentSelection.select();
+                        currentSelection.select();
 			}
 			catch (e)
 			{
-    // ignore
+                        // ignore
 			}
 
 			currentSelection = null;
@@ -15483,7 +15483,7 @@ mxPopupMenu.prototype.showSubmenu = function(parent, row)
 	if (row.div != null)
 	{
 	row.div.style.left = (parent.div.offsetLeft +
-		row.offsetLeft+row.offsetWidth - 1) + 'px';
+	row.offsetLeft+row.offsetWidth - 1) + 'px';
 	row.div.style.top = (parent.div.offsetTop+row.offsetTop) + 'px';
 	document.body.appendChild(row.div);
 	
@@ -15596,7 +15596,7 @@ mxPopupMenu.prototype.popup = function(x, y, cell, evt)
  */
 mxPopupMenu.prototype.isMenuShowing = function()
 {
-	return this.div != null && this.div.parentNode == document.body;
+    return this.div != null && this.div.parentNode == document.body;
 };
 
 /**
@@ -29594,7 +29594,7 @@ mxStackLayout.prototype.execute = function(parent)
 		}
 		finally
 		{
-			model.endUpdate();
+                    model.endUpdate();
 		}
 	}
 };
@@ -61092,6 +61092,22 @@ mxGraph.prototype.exitGroup = function()
 };
 
 /**
+* ASW popup handler
+* function take text from "type" field, add line feed "\n" and text 
+* from selected popup menu item. The result will put into "label" attribute of the cell.
+*/
+mxGraph.prototype.UpdateAWSComponent = function(editor,cell,evt) {
+    //mxLog.debug(evt.currentTarget.textContent);
+
+    var model = editor.graph.getModel();
+    var value = model.getValue(cell);
+    var attrs = value.attributes;
+    var text = attrs["type"].value + "\n" +evt.currentTarget.textContent;
+    var edit = new mxCellAttributeChange( cell, "label",text);
+    model.execute(edit);
+}
+
+/**
  * Function: home
  * 
  * Uses the root of the model as the root of the displayed cell hierarchy
@@ -83563,6 +83579,9 @@ mxEditor.prototype.setModified = function (value)
  * toggleHelp - Shows or hides the help window.
  * toggleOutline - Shows or hides the outline window.
  * toggleConsole - Shows or hides the console window.
+ *
+ * AWS:
+ * 
  */
 mxEditor.prototype.addActions = function ()
 {
@@ -83763,6 +83782,13 @@ mxEditor.prototype.addActions = function ()
 	{
 		editor.graph.enterGroup(cell);
 	});
+        
+        //AWS add action handler
+        this.addAction('UpdateAWSComponent', function(editor, cell, evt)
+	{
+		editor.graph.UpdateAWSComponent(editor,cell,evt);
+	});
+        
 	
 	this.addAction('exitGroup', function(editor)
 	{
@@ -85647,8 +85673,7 @@ mxEditor.prototype.UpdateAWSVertex = function (vertex){
         var template = null;
     }        
     if (template != null) {
-        def_label = vertex.value.attributes["default"].value
-        vertex.value.attributes["label"].value = vertex.value.attributes["label"].value + "\n" + def_label;
+        vertex.value.attributes["label"].value = vertex.value.attributes["type"].value + "\n" + vertex.value.attributes["default"].value;
     
         switch(template){
             case "aws_compute":

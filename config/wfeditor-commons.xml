@@ -10,7 +10,6 @@
         -->
         <add as="onInit">
 		function () {
-		    //debugger;
                     this.showTasks();
 		}
 	</add>
@@ -22,18 +21,6 @@
 		<add value="#4679B6"/>
 	</Array>
 	<Array as="templates">
-            <condition name="it_is_compute"><![CDATA[
-                function (editor, cell, evt) {                  
-                    debugger;
-                    var res = cell.value.attributes["template"].textContent;                                        
-                    // this is wrong place - need to find "creation" of object.
-                    //var label = cell.value.attributes["label"].textContent;
-                    //label = label + "</br>" + cell.value.attributes["default"].textContent;
-                    //cell.value.attributes["label"].value = label;
-                    //be aware of multi-call 
-                    return (res === "aws_compute");
-                }
-            ]]></condition>            
 		<add as="group">
 			<Group label="" description="" href="">
 				<mxCell vertex="1" style="group" connectable="0"/>
@@ -91,14 +78,14 @@
 			</Swimlane>
 		</add>
                 <add as="aws_compute">
-			<Task template="aws_compute" default="EC2" label="AWS Compute" description="Amazon Cloud Compute services" href="https://aws.amazon.com/products/?nc2=h_m1">
+			<Task template="aws_compute" default="EC2" type="AWS Compute" label="" description="Amazon Cloud Compute services" href="https://aws.amazon.com/products/?nc2=h_m1">
                             <mxCell vertex="1">	
                                     <mxGeometry as="geometry" width="72" height="72"/>                                        
                             </mxCell>
 			</Task>
 		</add>
                 <add as="aws_storage">
-			<Task template="aws_storage" default="S3" label="AWS Storage" description="" href="">
+			<Task template="aws_storage" default="S3" type="AWS Storage" label="" description="" href="">
 				<mxCell vertex="1">	
 					<mxGeometry as="geometry" width="72" height="72"/>
 				</mxCell>

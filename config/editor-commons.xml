@@ -9,6 +9,12 @@
                     return (res === "aws_storage");
                 }
             ]]></condition>                        
+            <condition name="it_is_compute"><![CDATA[
+                function (editor, cell, evt) {                  
+                    var res = cell.value.attributes["template"].textContent;                                        
+                    return (res === "aws_compute");
+                }
+            ]]></condition>            
 
 		<add as="cut" action="cut" icon="images/cut.gif"/>
 		<add as="copy" action="copy" icon="images/copy.gif"/>
@@ -20,19 +26,19 @@
 		<add as="enterGroup" action="enterGroup" icon="images/down.gif" if="validRoot"/>
 		<separator/>
                 <add as="AWS Compute" if="it_is_compute">
-                    <add as="EC2" />
-                    <add as="Lightsail" />
-                    <add as="Elastic Container Service" />
-                    <add as="EKS" />
-                    <add as="Lambda" />
-                    <add as="Batch" />
-                    <add as="Elastic Beanstalk" />
+                    <add as="EC2" action="UpdateAWSComponent"/>
+                    <add as="Lightsail" action="UpdateAWSComponent"/>
+                    <add as="ECS" aka="Elastic Container Service" action="UpdateAWSComponent"/>
+                    <add as="EKS" aka="Elastic Kubernetes Service" action="UpdateAWSComponent"/>
+                    <add as="Lambda" action="UpdateAWSComponent"/>
+                    <add as="Batch" action="UpdateAWSComponent"/>
+                    <add as="EB" aka="Elastic Beanstalk" action="UpdateAWSComponent"/>
                 </add>
                 <add as="AWS Storage" if="it_is_storage">
-                    <add as="S3" />
-                    <add as="EFS" />
-                    <add as="Glacier" />
-                    <add as="Storage Gateway" />
+                    <add as="S3" action="UpdateAWSComponent"/>
+                    <add as="EFS" action="UpdateAWSComponent"/>
+                    <add as="Glacier" action="UpdateAWSComponent"/>
+                    <add as="SG" aka="Storage Gateway" action="UpdateAWSComponent"/>
                 </add>                    
 		<add as="shape" if="cell">
 			<add as="group" action="group" icon="images/group.gif" if="ncells"/>
@@ -80,7 +86,6 @@
 		<add as="openHref"><![CDATA[
 			function (editor, cell)
 			{
-                            debugger;
 				cell = cell || editor.graph.getSelectionCell();
 				
 				if (cell == null)
