@@ -1,5 +1,4 @@
 <?php
-
 /*! \mainpage Cloud Maester
  *
  * \section php_interface Using PHP
@@ -17,8 +16,9 @@
  * \section debug url parameter
  * ?XDEBUG_SESSION_START=netbeans-xdebug
  */
+    define("INTERFACE_DIR", "./interfaces/");
     $xml = $_POST["xml"];
-    
+    $json_project_name = ""; // to pass name from "workflow" to "layer"
     $json_filename = "diagrams/cloudmaester.json";
     $xml_filename = "diagrams/cloudmaester.xml";
 
@@ -50,7 +50,7 @@
  * To merge JSON objects need to use trick:
  * https://stackoverflow.com/questions/20286208/merging-two-json-in-php
  * json_encode(array_merge(json_decode($a, true),json_decode($b, true))) 
- * 
+ * \NOTE: Do not usearry_merge, use siple array
  * first - generate array of json strings
  * second - merge them 
 */ 
@@ -66,7 +66,7 @@ function FormatJsonToAnalyser ($json) {
     $jam_comp = JsonAnalyticModel_Comp($json_input["root"]);
     $jam_infc = JsonAnalyticModel_Infc();
     
-    $json_output = json_encode(array_merge($jam_info,$jam_func,$jam_comp,$jam_infc));
+    $json_output = json_encode(array($jam_info,$jam_func,$jam_comp,$jam_infc));
     return $json_output;
 }
 
@@ -75,6 +75,8 @@ function JsonAnalyticModel_Info($workflow){
      * \TODO check $workflow["@attributes"] is not null and so on.    
      * href - lost
      */    
+    global $json_project_name;
+    $json_project_name = $workflow["@attributes"]["label"];
     return array("info" => array("Name" => $workflow["@attributes"]["label"],"Description" =>$workflow["@attributes"]["description"]));
 }
 function JsonAnalyticModel_Func($func){
@@ -107,7 +109,7 @@ function JsonAnalyticModel_Comp($comp){
                 /*
                  * Add "NotSupported" component .. just one, so multiple issues will be overrided
                  */                
-                $comp_out["components"] = array_merge(
+                $comp_out["components"] = array(
                         $comp_out["components"],
                         array("NotSupported"=>
                                array("info"=>$key,
@@ -128,10 +130,14 @@ function TransferLayerToPlantUml($out,$arr){
      * "id" -> "interfaces"
      * "components" - is the container for other nested components;
      */    
+    global $json_project_name; // костыль - use global name instead layer name $arr["@attributes"]["label"]  
+    $layer_interface = "layer_interface.json";        
     $newout = array("components" => 
                     array("Layer"=>
-                        array("info"=>$arr["@attributes"]["label"],
-                               "interfaces"=>"mxgid_".$arr["@attributes"]["id"],
+                        array("info"=>$json_project_name,
+                               "interfaces"=>array("mxgraph_id" => $arr["@attributes"]["id"],
+                                                    "layer"=>LoadInterfaces($layer_interface)
+                                            ),
                                 "components"=>null
                         )
                     )
@@ -146,7 +152,7 @@ function TransferSwimlaneToPlantUml($out,$arr){
         foreach($arr as $key => $val){
         $swimlane = array($val["@attributes"]["label"] => 
                         array("info"=>array("Name" =>$val["@attributes"]["label"]),
-                            "interfaces"=>"mxgid_".$val["@attributes"]["id"],
+                            "interfaces"=>array("mxgraph_id" => $val["@attributes"]["id"]),
                             "components"=>null
                         )
                     );
@@ -155,7 +161,7 @@ function TransferSwimlaneToPlantUml($out,$arr){
             $out["components"]["Layer"]["components"] = $swimlane;
         } else {
             //there are other components at Layer already
-            $out["components"]["Layer"]["components"] = array_merge($out["components"]["Layer"]["components"],$swimlane);
+            $out["components"]["Layer"]["components"] = array($out["components"]["Layer"]["components"],$swimlane);
         }
     }
     return $out;
@@ -163,16 +169,96 @@ function TransferSwimlaneToPlantUml($out,$arr){
 function TransferTaskToPlantUml($out,$arr){
     /*
      * \TODO check $array["@attributes"] is not null and so on
-     * "Tasks" are someting inside swimlane or Layer
+     * "Task" are someting inside swimlane or Layer
      * "Task" may have interfaces (connectors)
      */    
-    $newout = $out;
-    return $newout;
+    $res = null;
+    foreach($arr as $key => $val){
+        // label
+        $comp_name = str_replace("\n"," ",$val["@attributes"]["label"]);
+        
+        // description
+        $comp_descr = $val["@attributes"]["description"];
+        
+        // href
+        $comp_href = $val["@attributes"]["href"];
+
+        // id
+        $comp_id = $val["@attributes"]["id"];
+        
+        $new_comp = array($comp_name => 
+                        array("Info" => 
+                            array("Name"=>$val["@attributes"]["template"],
+                                "Description" => $comp_descr,
+                                "Link" => $comp_href
+                            )                            
+                        )
+                    );
+        
+        // parent id - the id of owner of this component 
+        // TODO - search and allocate properly .. using graphs
+        $parent_id = $val["mxCell"]["@attributes"]["parent"];
+        
+        // create interface name to import it from file
+        switch ($val["@attributes"]["template"]) {
+            case "aws_compute":
+                $interface_name = "aws_compute_".ExtractTaskType($val["@attributes"]).".json";                
+                break;
+            case "aws_storage":
+                $interface_name = "aws_storage_".ExtractTaskType($val["@attributes"]).".json";                
+                break;            
+            default:
+                $interface_name ="default_interface.json";
+        }
+    
+        $infc = array(LoadInterfaces($interface_name));
+        
+        $new_comp[$comp_name]["Interfaces"] = $infc;
+        $comp = $new_comp;        
+        if($res===null){
+            $res = $comp;
+        } else {
+            $res = array($res,$comp);
+        }
+    }
+    
+    // TODO - add components inside Layer.
+    $out["components"]["Layer"]["components"] = $res;
+            
+    return $out;
 }
 
+function ExtractTaskType($desc){
+    return ltrim(str_replace($desc["type"], "", $desc["label"]),"\n");
+}
 
 function JsonAnalyticModel_Infc(){
     return array("interfaces"=> array("if1" => "interface 1","if2" => "interface 2"));
 }
 
+
+function LoadInterfaces($interface_name){    
+    $out = null;
+    $fname = INTERFACE_DIR.$interface_name;
+    if (file_exists($fname)) {
+        $finfc = fopen($fname,"r");
+        
+        if( $finfc === false){
+            return false; //TODO error processing if can't open files
+        }
+        while (($buffer = fgets($finfc) ) !== false) {
+            $out = $out.trim($buffer);
+        }
+        if (!feof($finfc)) {
+            // "Error: unexpected fgets() fail\n";
+            return false; //TODO error processing if can't open files
+        }                
+        fclose($finfc);
+    } else {
+        // "Error: file doesn't exists";
+        return false; //TODO error processing if can't open files
+    }
+    
+    return json_decode($out,true);
+}
 ?>

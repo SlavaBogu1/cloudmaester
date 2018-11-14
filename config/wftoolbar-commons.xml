@@ -26,15 +26,20 @@
     <add as="redo" action="redo" icon="images/redo.gif"/>
     <br/>            
     <hr/>
-    <header text="AWS locations"/>
-    <add as="North America" template="swl_na" icon="images/location/na.png"/>
-    <add as="Asia Pacific" template="swl_apac" icon="images/location/apac.png"/>
-    <add as="Europe" template="swl_europe" icon="images/location/europe.png"/>
-    <add as="South America" template="swl_sa" icon="images/location/sa.png"/>
-    <br/>            
-    <hr/>
-    <header text="Other locations"/>
-    <add as="Custom Location" template="swl_op" icon="images/location/op.png"/>
+    <header text="locations"/>
+    <add as="On-prem" template="swl_op" icon="images/location/op.png"/>    
+    <!-- for future extension
+    Need to select cloud, but keep other "selections" unchanged.
+    <add as="AWS" mode="cloud_select" icon="images/select.gif"/>
+    <add as="Azure" mode="cloud_select" icon="images/select.gif"/>
+    <add as="Google" mode="cloud_select" icon="images/select.gif"/>
+    -->
+    <br/>
+    <add as="AWS North America" template="swl_na" icon="images/location/na.png"/>
+    <add as="AWS Asia Pacific" template="swl_apac" icon="images/location/apac.png"/>
+    <add as="AWS Europe" template="swl_europe" icon="images/location/europe.png"/>
+    <add as="AWS South America" template="swl_sa" icon="images/location/sa.png"/>
+
     <br/>            
     <hr/>
 
@@ -64,6 +69,7 @@
     <header text="AWS AMI"/>
     <add as="AMI Linux" template="ami_linux" style="symbol;image=images/ami/linux/linux.png" icon="images/ami/linux/linux.png"/>
     <add as="AMI Windows Server 2016" template="ami_win" style="symbol;image=images/ami/windows/windows-server_2016.png" icon="images/ami/windows/windows-server_2016.png"/>
+    <add as="AMI Other" template="ami_other" style="symbol;image=images/ami/windows/windows_8.png" icon="images/ami/windows/windows_8.png"/>
 <!--    
     <add as="select" mode="select" icon="images/select.gif"><![CDATA[
             function (editor)
