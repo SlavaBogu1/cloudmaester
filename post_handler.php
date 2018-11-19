@@ -38,12 +38,171 @@
       $xml_string = simplexml_load_string($xml);
       //$json = json_encode($xml_string,JSON_UNESCAPED_UNICODE);
       $json = json_encode($xml_string); // escape UNICODE as \uXXXX
-      $result = FormatJsonToAnalyser($json);
+      //$result = FormatJsonToAnalyser($json);
+      $result = ConvertToPlantUml($json);
       
       fputs($fjson , $result);
       fclose($fxml);
       fclose($fjson);
     }
+    
+    
+function ConvertToPlantUml($json){
+    class cPlantUml_Componnets{        
+        public $info;
+        public $interfaces;
+        public $components;        
+        function __construct($attributes){            
+            $this->info = ["Name" => $attributes['label']];
+            $this->components = json_decode ("{}");
+            $this->interfaces = json_decode ("{}");
+        }     
+        function GetName(){
+            return $this->info["Name"];
+        }
+    }
+    class cPlantUml { 
+        public $info; 
+        public $functionality; 
+        public $components; 
+        public $interfaces; 
+        private $MxGraph_json;
+        private $Project_Name;
+        private $components_array_by_id = [array()];
+        private $interfaces_array_by_id = [];
+        function __construct($json) { 
+            $this->MxGraph_json = json_decode($json,TRUE);
+            
+            foreach ($this->MxGraph_json["root"] as $key =>$val){
+                switch($key){
+                    case 'Workflow':
+                        //id = 0
+                        $id = $val["@attributes"]["id"];
+                        $this->components_array_by_id[$id]["component"] = $val;
+                        $this->components_array_by_id[$id]["parent"] = null;
+                        $this->components_array_by_id[$id]["source"] = null;
+                        $this->components_array_by_id[$id]["target"] = null;
+                        break;
+                    case 'Layer':
+                        //id = 1
+                        $id = $val["@attributes"]["id"];
+                        $this->components_array_by_id[$id]["component"] = $val;
+                        $this->components_array_by_id[$id]["parent"] = null;
+                        $this->components_array_by_id[$id]["source"] = null;
+                        $this->components_array_by_id[$id]["target"] = null;
+                        break;
+                    case 'Swimlane':
+                        foreach($val as $list=>$record){                            
+                            $id = $record["@attributes"]["id"];
+                            $this->components_array_by_id[$id]["component"] = $record;                            
+                            $this->components_array_by_id[$id]["parent"] = $record["mxCell"]["@attributes"]["parent"];
+                            $this->components_array_by_id[$id]["source"] = $record["mxCell"]["@attributes"]["source"];
+                            $this->components_array_by_id[$id]["target"] = $record["mxCell"]["@attributes"]["target"];
+                        }                        
+                        break;
+                    case 'Task':
+                        foreach($val as $list=>$record){                            
+                            $id = $record["@attributes"]["id"];
+                            $this->components_array_by_id[$id]["component"] = $record;                        
+                            $this->components_array_by_id[$id]["parent"] = $record["mxCell"]["@attributes"]["parent"];
+                            $this->components_array_by_id[$id]["source"] = $record["mxCell"]["@attributes"]["source"];
+                            $this->components_array_by_id[$id]["target"] = $record["mxCell"]["@attributes"]["target"];
+                        }                                                
+                        break;
+                    case 'Edge':
+                        foreach($val as $list=>$record){                            
+                            $id = $record["@attributes"]["id"];
+                            $this->components_array_by_id[$id]["component"] = $record;
+                            $this->components_array_by_id[$id]["parent"] = $record["mxCell"]["@attributes"]["parent"];
+                            $this->components_array_by_id[$id]["source"] = $record["mxCell"]["@attributes"]["source"];
+                            $this->components_array_by_id[$id]["target"] = $record["mxCell"]["@attributes"]["target"];                            
+                            
+                            $this->interfaces_array_by_id[$id] = $record;                        
+                        }                                                
+                        break;
+                    default:
+                }
+            }
+            $this->Project_Name = $this->components_array_by_id['0']["component"]['@attributes']['label'];
+        } 
+        function Generate_Info_Object() {             
+            $workflow = $this->MxGraph_json["root"]["Workflow"];            
+            return array("Name" => $workflow["@attributes"]["label"],"Description" =>$workflow["@attributes"]["description"]);
+        }
+        function Generate_functionality_Object() { 
+            //empty for now - constructor generated empty object
+            return json_decode ("{}");
+        }
+        function Generate_Components_Object() { 
+            // to convert array to object before json encoding - use (object) 
+            // http://php.net/manual/en/language.types.object.php            
+            // cPlantUml 
+            $components = [$this->Project_Name => new cPlantUml_Componnets($this->components_array_by_id[1]["component"]["@attributes"])];
+            $current_parent = 1;
+            $max_cnt = count($this->components_array_by_id);
+            do {
+                // cPlantUml_components
+                $current_component = $this->GetComponentbyid($components,$current_parent);
+                for ($i = 2; $i < $max_cnt;$i++ ){
+                    // if $current_component is false - skip.
+                    if ($current_component === false) break;                    
+                    $parent_id = $this->GetParentbyid($i);
+                    if($current_parent === (int)$parent_id) {
+                        //current_parent is the "parent" of an object with ID = i
+                        $ccc = $this->components_array_by_id[$i]["component"];
+                        $c = count((array)$current_component);
+                        if ($c ===0 ) {
+                            $current_component = new cPlantUml_Componnets($ccc["@attributes"]);
+                        } else {
+                            $arr = (array)$current_component;
+                            $narr = (array) (new cPlantUml_Componnets($ccc["@attributes"]));                            
+                            $current_component = (object)(array_merge($arr,$narr));
+                        } 
+                    }                    
+                }            
+                $current_parent = $current_parent +1;
+            } while($current_parent < $max_cnt);
+                        
+            return (object)$components;
+            //return new cPlantUml_Componnets();
+        }
+        
+        function GetComponentbyid($cmp,$id){
+            $name =  $this->components_array_by_id[$id]["component"]["@attributes"]["label"];
+            foreach($cmp as $key=>$val){
+                if (strcmp($name,$val->GetName()) === 0){
+                    return $val->components;
+                }
+            }
+            return false;
+        }
+        
+        function GetParentbyid($id){
+            $comp = $this->components_array_by_id[$id];
+            if (empty($comp)) return false;
+            $parent_id = $comp["parent"];
+            if (empty($comp)) return false;
+            return $parent_id;            
+        }
+        
+        function Generate_Interfaces_Object() { 
+            return array("info" => array("Name" => "cluster fuck"));
+        }
+        
+    }
+    
+    $output = new cPlantUml ($json);
+    $output->info = $output->Generate_Info_Object();    
+    $output->functionality = $output->Generate_functionality_Object();
+
+    $output->components  = $output->Generate_Components_Object();
+
+    $output->interfaces  = $output->Generate_Interfaces_Object();
+    
+    $json_output = json_encode($output);
+    return $json_output;
+}
+    
     
 /*! \mainpage Cloud Maester
  *
@@ -61,30 +220,13 @@ function FormatJsonToAnalyser ($json) {
     /*
      * \TODO check $json_input["root"] is not null and so on.    
      */
-    $jam_info = JsonAnalyticModel_Info( $json_input["root"]["Workflow"]);
-    $jam_func = JsonAnalyticModel_Func($json_input);
     $jam_comp = JsonAnalyticModel_Comp($json_input["root"]);
     $jam_infc = JsonAnalyticModel_Infc();
     
-    $json_output = json_encode(array($jam_info,$jam_func,$jam_comp,$jam_infc));
+    $json_output = json_encode(array_merge($jam_info,$jam_func,$jam_comp,$jam_infc));
     return $json_output;
 }
 
-function JsonAnalyticModel_Info($workflow){
-    /*
-     * \TODO check $workflow["@attributes"] is not null and so on.    
-     * href - lost
-     */    
-    global $json_project_name;
-    $json_project_name = $workflow["@attributes"]["label"];
-    return array("info" => array("Name" => $workflow["@attributes"]["label"],"Description" =>$workflow["@attributes"]["description"]));
-}
-function JsonAnalyticModel_Func($func){
-    /*
-     * Store a full-copy of the original MxGraph json (for debug purpose)
-     */    
-    return array("functionality"=> $func);
-}
 function JsonAnalyticModel_Comp($comp){
     /*
      * \TODO check $workflow["@attributes"] is not null and so on.    
@@ -131,17 +273,16 @@ function TransferLayerToPlantUml($out,$arr){
      * "components" - is the container for other nested components;
      */    
     global $json_project_name; // костыль - use global name instead layer name $arr["@attributes"]["label"]  
-    $layer_interface = "layer_interface.json";        
-    $newout = array("components" => 
-                    array("Layer"=>
-                        array("info"=>$json_project_name,
-                               "interfaces"=>array("mxgraph_id" => $arr["@attributes"]["id"],
-                                                    "layer"=>LoadInterfaces($layer_interface)
-                                            ),
-                                "components"=>null
-                        )
-                    )
-                );
+    $layer_interface = "layer_interface.json";
+    $layer = ["Layer"=> 
+                    ["info"=>$json_project_name,
+                        "interfaces"=>[
+                            "mxgraph_id" => $arr["@attributes"]["id"],"layer"=>LoadInterfaces($layer_interface),
+                            "components"=>json_decode("{}")
+                        ]
+                    ]
+                ];
+    $newout = ["components" => $layer];
     return $newout;
 }
 function TransferSwimlaneToPlantUml($out,$arr){
