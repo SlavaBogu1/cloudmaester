@@ -156,10 +156,11 @@ function ConvertToPlantUml($json){
                         } else {
                             $arr = (array)$current_component;
                             $narr = (array) (new cPlantUml_Componnets($ccc["@attributes"]));                            
-                            $current_component = (object)(array_merge($arr,$narr));
+                            $ar = array_push($arr,$narr);
+                            $current_component = (object)($arr);
                         } 
                     }                    
-                }            
+                }  //for                         
                 $current_parent = $current_parent +1;
             } while($current_parent < $max_cnt);
                         
